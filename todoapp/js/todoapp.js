@@ -33,6 +33,11 @@ function addTodo() {
 function renderTodos() {
     const todoList = document.getElementById("todo-list");
     todoList.innerHTML = "";
+
+    if (todos.length === 0) {
+        todoList.innerHTML = "<p>Não há nenhuma tarefa.</p>";
+    }
+
     let count = 1;
 
     for (const todo of todos) {
@@ -65,8 +70,12 @@ function renderTodos() {
 function renderPendingTodos() {
     const todoList = document.getElementById("todo-list");
     todoList.innerHTML = "";
+    
+    if (todos.length === 0) {
+        todoList.innerHTML = "<p>Não há nenhuma tarefa pendente.</p>";
+    }
+    
     let count = 1;
-
     for (const todo of todos) {
         if (!todo.completed) {
             const todoItem = document.createElement("li");
@@ -95,6 +104,11 @@ function renderPendingTodos() {
 function renderCompletedTodos() {
     const todoList = document.getElementById("todo-list");
     todoList.innerHTML = "";
+
+    if (todos.length === 0) {
+        todoList.innerHTML = "<p>Não há nenhuma tarefa concluída.</p>";
+    }
+
     let count = 1;
 
     for (const todo of todos) {
