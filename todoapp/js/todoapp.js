@@ -32,13 +32,17 @@ function addTodo() {
 
 function renderTodos() {
     const todoList = document.getElementById("todo-list");
-    todoList.innerHTML = "Tarefas";
+    todoList.innerHTML = "";
     let count = 1;
 
     for (const todo of todos) {
         const todoItem = document.createElement("li");
+        todoItem.classList = ["todo"];
         todoItem.id = todo.id;
-        todoItem.textContent = todo.text;
+
+        const todoItemText = document.createElement("p");
+        todoItemText.textContent = todo.text;
+        todoItem.appendChild(todoItemText);
 
         if (!todo.completed) {
             const completeTodo = document.createElement("button");
@@ -60,14 +64,18 @@ function renderTodos() {
 
 function renderPendingTodos() {
     const todoList = document.getElementById("todo-list");
-    todoList.innerHTML = "Tarefas Pendentes";
+    todoList.innerHTML = "";
     let count = 1;
 
     for (const todo of todos) {
         if (!todo.completed) {
             const todoItem = document.createElement("li");
+            todoItem.classList = ["todo"];
             todoItem.id = todo.id;
-            todoItem.textContent = todo.text;
+
+            const todoItemText = document.createElement("p");
+            todoItemText.textContent = todo.text;
+            todoItem.appendChild(todoItemText);
 
             const completeTodo = document.createElement("button");
             completeTodo.id = "complete-button";
@@ -86,14 +94,18 @@ function renderPendingTodos() {
 
 function renderCompletedTodos() {
     const todoList = document.getElementById("todo-list");
-    todoList.innerHTML = "Tarefas Concluídas";
+    todoList.innerHTML = "";
     let count = 1;
 
     for (const todo of todos) {
         if (todo.completed) {
             const todoItem = document.createElement("li");
+            todoItem.classList = ["todo"];
             todoItem.id = todo.id;
-            todoItem.textContent = todo.text;
+
+            const todoItemText = document.createElement("p");
+            todoItemText.textContent = todo.text;
+            todoItem.appendChild(todoItemText);
 
             todoList.appendChild(todoItem);
         }
