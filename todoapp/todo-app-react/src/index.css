@@ -1,6 +1,7 @@
 * {
     font-family: "Lato", sans-serif;
 }
+
 body {
     background-color: lightgray;
 }
@@ -37,6 +38,11 @@ main {
 .first-tab {
     padding-right: 5px;
     border-right: 1px solid black;
+}
+
+.middle-tab {
+  padding-right: 15px;
+  padding-left: 15px;
 }
 
 .end-tab {
