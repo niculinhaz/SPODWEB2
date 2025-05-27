@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useEffect } from 'react';
 
 const AddTodo = ({ onAddTodo }) => {
     const [inputValue, setInputValue] = useState('');
@@ -44,7 +45,7 @@ const TodoItem = ({ todo, onToggleComplete }) => {
     return (
         <li className="todo" id={todo.id}>
             <p>{todo.text}</p>
-            {!todo.completed && (
+            {!todo.done && (
                 <button 
                     id="complete-button" 
                     onClick={() => onToggleComplete(todo.id)}
@@ -57,32 +58,93 @@ const TodoItem = ({ todo, onToggleComplete }) => {
 }
 
 const TodoList = () => {
-    const [todos, setTodos] = useState([
-        { id: 1, text: "Aprenda React", completed: false },
-        { id: 2, text: "Aprenda JS", completed: false }
-    ]);
+    const [todos, setTodos] = useState([]);
     const [filter, setFilter] = useState('all');
 
     const addTodo = (text) => {
-        const newTodo = { 
-            id: todos.length > 0 ? Math.max(...todos.map(t => t.id)) + 1 : 1,
-            text,
-            completed: false 
+        const newTodo = { id: crypto.randomUUID(), text, done: false };
+        fetch("http://localhost:3000/todos", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(newTodo),
+            })
+            .then((response) => {
+                if (!response.ok) {
+                throw new Error("Erro ao realizar o Post");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log("Post bem-sucedido");
+                setTodos((prevTodos) => [...prevTodos, newTodo]);
+            })
+            .catch((error) => {
+                throw new Error("Erro ao inserir nova task");
+            });
         };
-        setTodos([...todos, newTodo]);
-    };
 
-    const toggleTodo = (id) => {
-        setTodos(todos.map(todo => 
-            todo.id === id ? { ...todo, completed: !todo.completed } : todo
-        ));
-    };
+    const markTodoAsDone = (id) => {
+        const URL_PUT = `http://localhost:3000/todos/${id}`;
+        const task = todos.find((todo) => todo.id === id);
+
+        const newTask = { ...task, done: true };
+
+        fetch(URL_PUT, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(newTask),
+        })
+        .then((response) => {
+            if (!response.ok) {
+            throw new Error("Erro ao realizar o PUT");
+            }
+            return response.json();
+        })
+        .then((data) => {
+            console.log("Put bem-sucedido");
+            setTodos((prevTodos) =>
+            prevTodos.map((todo) => (todo.id === id ? data : todo))
+            );
+        })
+        .catch((error) => {
+            throw new Error("Erro ao atualizar task");
+        });
+  };
 
     const filteredTodos = todos.filter(todo => {
-        if (filter === 'pending') return !todo.completed;
-        if (filter === 'completed') return todo.completed;
+        if (filter === 'pending') return !todo.done;
+        if (filter === 'completed') return todo.done;
         return true;
     });
+
+    useEffect(() => {
+    const fetchTodos = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/todos", {
+            headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        if (!response.ok) {
+          throw new Error("Erro ao buscar os dados");
+        }
+        const data = await response.json();
+        setTodos(data);
+      } catch (error) {
+        console.error("Erro ao buscar os dados:", error);
+      }
+    };
+
+    fetchTodos();
+  }, [filter]);
+
 
     return (  
         <div className="container">
@@ -106,7 +168,7 @@ const TodoList = () => {
                         <TodoItem 
                             key={todo.id} 
                             todo={todo} 
-                            onToggleComplete={toggleTodo}
+                            onToggleComplete={markTodoAsDone}
                         />
                     ))
                 )}
